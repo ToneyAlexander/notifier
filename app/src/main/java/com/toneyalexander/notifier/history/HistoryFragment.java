@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.toneyalexander.notifier.MainActivity;
 import com.toneyalexander.notifier.R;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ public class HistoryFragment extends Fragment {
     RecyclerView mRecyclerView;
     HistoryAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
+    private MainActivity activity;
 
     @Override
     public View onCreateView(
@@ -31,13 +33,7 @@ public class HistoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view.findViewById(R.id.button_second).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavHostFragment.findNavController(HistoryFragment.this)
-                        .navigate(R.id.action_SecondFragment_to_FirstFragment);
-            }
-        });
+        activity = (MainActivity)this.getActivity();
 
         mRecyclerView = view.findViewById(R.id.notification_history);
 

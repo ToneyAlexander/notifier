@@ -7,11 +7,15 @@ import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.toneyalexander.notifier.history.HistoryFragment;
+import com.toneyalexander.notifier.history.HistorySingleton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -38,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
             String description = getString(R.string.channel_description);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
 
-
             NotificationChannel channel = new NotificationChannel(getString(R.string.channel_id), name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
@@ -56,8 +59,54 @@ public class MainActivity extends AppCompatActivity {
         //Find proper place for this call???
         createNotificationChannel();
 
+        // Instantiate a ViewPager2 and a PagerAdapter.
+        viewPager = findViewById(R.id.pager);
+        pagerAdapter = new ScreenSlidePagerAdapter(this);
+        viewPager.setAdapter(pagerAdapter);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+    }
+
+    public void next(){
+        viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (viewPager.getCurrentItem() == 0) {
+            // If the user is currently looking at the first step, allow the system to handle the
+            // Back button. This calls finish() on this activity and pops the back stack.
+            super.onBackPressed();
+        } else {
+            // Otherwise, select the previous step.
+            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
+        }
+    }
+
+    /**
+     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
+     * sequence.
+     */
+    private class ScreenSlidePagerAdapter extends FragmentStateAdapter {
+        public ScreenSlidePagerAdapter(FragmentActivity fa) {
+            super(fa);
+        }
+
+        @Override
+        public Fragment createFragment(int position) {
+            switch(position){
+                case 1:
+                    return new HistoryFragment();
+                default:
+                    return new CreateFragment();
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return 2;
+        }
     }
 
     @Override
