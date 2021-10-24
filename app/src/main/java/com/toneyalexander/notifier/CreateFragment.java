@@ -36,15 +36,6 @@ public class CreateFragment extends Fragment {
 
         activity = (MainActivity)this.getActivity();
 
-        view.findViewById(R.id.button_history).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                activity.next();
-                //NavHostFragment.findNavController(CreateFragment.this)
-                //        .navigate(R.id.action_FirstFragment_to_SecondFragment);
-            }
-        });
-
         title = (EditText) view.findViewById(R.id.titleEditText);
         text = (EditText) view.findViewById(R.id.contentEditText);
 
@@ -61,6 +52,10 @@ public class CreateFragment extends Fragment {
 //TODO: Sound mixer in notification bar
     //TODO: color picker
     //TODO: joseph features?
+
+    //TODO: Pairity: Dark Mode
+    //TODO: Pairity: saving
+    //TODO: Pairity: color
 
     public void createNotification(Notification notification){
         /*

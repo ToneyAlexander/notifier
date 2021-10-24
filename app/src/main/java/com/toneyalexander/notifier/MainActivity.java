@@ -7,9 +7,12 @@ import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.android.material.tabs.TabLayout;
 import com.toneyalexander.notifier.history.HistoryFragment;
 import com.toneyalexander.notifier.history.HistorySingleton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
@@ -66,6 +69,14 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                tab.setText(TabConfiguration.getTab(position).getTitle());
+            }
+        }).attach();
     }
 
     public void next(){
@@ -95,12 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment createFragment(int position) {
-            switch(position){
-                case 1:
-                    return new HistoryFragment();
-                default:
-                    return new CreateFragment();
-            }
+            return TabConfiguration.getTab(position).getBody();
         }
 
         @Override
