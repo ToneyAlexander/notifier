@@ -16,4 +16,6 @@
     <string name="channel_id">NOTIFIER_ID</string>
     <string name="channel_name">Notifier</string>
     <string name="channel_description">Notifier created notifications</string>
+    <string name="notification_color">Notification Color</string>
+    <string name="color_picker">Color Picker</string>
 </resources>

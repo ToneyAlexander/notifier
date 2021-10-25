@@ -35,5 +35,4 @@ public final class TabConfiguration {
             return this.title;
         }
     }
-
 }
