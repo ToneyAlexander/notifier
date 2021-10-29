@@ -1,8 +1,12 @@
-package com.toneyalexander.notifier;
+package com.toneyalexander.notifier.notification;
 
-import android.graphics.Color;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
+@Entity
 public class Notification {
+    @PrimaryKey
     private int id;
     private int color;
     private String title;

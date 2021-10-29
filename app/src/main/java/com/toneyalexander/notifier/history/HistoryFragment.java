@@ -5,12 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.toneyalexander.notifier.notification.Notification;
+import com.toneyalexander.notifier.notification.NotificationDataSingleton;
 import com.toneyalexander.notifier.MainActivity;
 import com.toneyalexander.notifier.R;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,9 +40,25 @@ public class HistoryFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mAdapter = new HistoryAdapter(HistorySingleton.getInstance().getHistory());
+        mAdapter = new HistoryAdapter(this.getContext(), getString(R.string.channel_id), new Callback() {
+            @Override
+            public void copy(Notification notification) {
+                activity.copyAction(notification);
+            }
+        }, NotificationDataSingleton.getInstance().getHistory(this.getContext()));
         // Set CustomAdapter as the adapter for RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
         // END_INCLUDE(initializeRecyclerView)
+    }
+
+    public interface Callback {
+        public void copy(Notification n);
+    }
+
+    public void notifyDataSetChanged(){
+        if(mAdapter != null) {
+            mAdapter.updateDataset(NotificationDataSingleton.getInstance().getHistory(this.getContext()));
+            mAdapter.notifyDataSetChanged();
+        }
     }
 }

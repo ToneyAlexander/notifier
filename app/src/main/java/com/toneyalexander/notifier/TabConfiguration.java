@@ -9,6 +9,14 @@ public final class TabConfiguration {
     private static final Tab CREATE = new Tab("Create", new CreateFragment());
     private static final Tab HISTORY = new Tab("History", new HistoryFragment());
 
+    public static HistoryFragment getHistoryFragment(){
+        return (HistoryFragment) HISTORY.getBody();
+    }
+
+    public static CreateFragment getCreateFragment(){
+        return (CreateFragment) CREATE.getBody();
+    }
+
     public static Tab getTab(int position) {
         switch(position){
             case 1:
@@ -31,7 +39,7 @@ public final class TabConfiguration {
             return this.body;
         }
 
-        public  String getTitle(){
+        public String getTitle(){
             return this.title;
         }
     }

@@ -1,35 +1,24 @@
 package com.toneyalexander.notifier;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.material.tabs.TabLayout;
-import com.toneyalexander.notifier.history.HistoryFragment;
-import com.toneyalexander.notifier.history.HistorySingleton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.view.View;
-
 import android.view.Menu;
 import android.view.MenuItem;
-
-import android.graphics.Color;
-import android.widget.Button;
-import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -81,6 +70,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void next(){
         viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+    }
+
+    public void notificationDatabaseChanged(){
+        TabConfiguration.getHistoryFragment().notifyDataSetChanged();
+    }
+
+    public void copyAction(com.toneyalexander.notifier.notification.Notification notification){
+        TabConfiguration.getCreateFragment().setFromTemplate(notification);
+        viewPager.setCurrentItem(0);
     }
 
     @Override

@@ -1,11 +1,9 @@
 package com.toneyalexander.notifier;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,9 +15,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.toneyalexander.notifier.notification.NotificationDataSingleton;
+import com.toneyalexander.notifier.notification.Notification;
+
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 public class CreateFragment extends Fragment {
@@ -34,12 +34,13 @@ public class CreateFragment extends Fragment {
 
     private MainActivity activity;
 
-    private int color = Color.rgb(255, 0, 0);
+    private int color;
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
 
     private final String NOTIFICATION_ID = "notificationId";
+    private final String COLOR = "color";
 
     private int notificationId;
 
@@ -61,6 +62,7 @@ public class CreateFragment extends Fragment {
         editor = preferences.edit();
 
         notificationId = preferences.getInt(NOTIFICATION_ID, 0);
+        color = preferences.getInt(COLOR, ContextCompat.getColor(getContext(), R.color.colorAccent));
 
         title = (EditText) view.findViewById(R.id.titleEditText);
         text = (EditText) view.findViewById(R.id.contentEditText);
@@ -101,9 +103,12 @@ public class CreateFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Notification note = new Notification(notificationId++, color, title.getText().toString(), text.getText().toString());
+                NotificationDataSingleton.createNotification(getContext(), getString(R.string.channel_id), note);
                 editor.putInt(NOTIFICATION_ID, notificationId);
+                editor.putInt(COLOR, color);
                 editor.apply();
-                createNotification(note);
+                NotificationDataSingleton.getInstance().writeNotification(getContext(), note);
+                activity.notificationDatabaseChanged();
             }
         });
     }
@@ -112,39 +117,10 @@ public class CreateFragment extends Fragment {
         preview.setColorFilter(color);
     }
 
-    //TODO: Sound mixer in notification bar
-
-    //TODO: Pairity: saving
-    //TODO: unique id
-    //todo: games in notif?
-
-    //TODO: Color - last HSV slider
-    //TODO app icon
-    //color pciker ui
-    //backlog of notififcations
-
-    public void createNotification(Notification notification){
-        /*
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        //.setSmallIcon(android.R.drawable.ic_menu_sort_by_size)
-                        //.setSmallIcon(android.R.drawable.ic_menu_selectall_holo_light)
-                        .setSmallIcon(R.drawable.ic_star_border_white_24dp)
-                        .setColor(((ColorDrawable) color.getBackground()).getColor())
-        */
-
-
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), getString(R.string.channel_id))
-                .setSmallIcon(R.drawable.ic_star_border_black_24dp)
-                .setColor(notification.getColor())
-                .setContentTitle(notification.getTitle())
-                .setContentText(notification.getText())
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
-
-        // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(notification.getId(), builder.build());
+    public void setFromTemplate(Notification template) {
+        title.setText(template.getTitle());
+        text.setText(template.getText());
+        color = template.getColor();
+        updatePreview();
     }
 }
