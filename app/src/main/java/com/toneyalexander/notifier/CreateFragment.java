@@ -1,6 +1,8 @@
 package com.toneyalexander.notifier;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -34,6 +36,13 @@ public class CreateFragment extends Fragment {
 
     private int color = Color.rgb(255, 0, 0);
 
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor editor;
+
+    private final String NOTIFICATION_ID = "notificationId";
+
+    private int notificationId;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -48,25 +57,42 @@ public class CreateFragment extends Fragment {
 
         activity = (MainActivity)this.getActivity();
 
+        preferences = activity.getSharedPreferences("Notifier", Context.MODE_PRIVATE);
+        editor = preferences.edit();
+
+        notificationId = preferences.getInt(NOTIFICATION_ID, 0);
+
         title = (EditText) view.findViewById(R.id.titleEditText);
         text = (EditText) view.findViewById(R.id.contentEditText);
 
         preview = (ImageView) view.findViewById(R.id.color_preview);
-        colorPicker = (ImageView) view.findViewById(R.id.color_picker);
-        final Bitmap picker_bitmap = ((BitmapDrawable)colorPicker.getDrawable()).getBitmap();
-
         updatePreview();
 
+        colorPicker = (ImageView) view.findViewById(R.id.color_picker);
+        final Bitmap picker_bitmap = ((BitmapDrawable)colorPicker.getDrawable()).getBitmap();
         colorPicker.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                int x = (int)((event.getX()/colorPicker.getWidth()) * picker_bitmap.getWidth());
-                int y = (int)((event.getY()/colorPicker.getHeight()) * picker_bitmap.getHeight());
-                color = picker_bitmap.getPixel(x,y);
+                switch(event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        int x = (int)((event.getX()/colorPicker.getWidth()) * picker_bitmap.getWidth());
+                        int y = (int)((event.getY()/colorPicker.getHeight()) * picker_bitmap.getHeight());
+                        Log.e("press", "x: " + x + "/" + picker_bitmap.getWidth());
+                        Log.e("press", "y: " + y + "/" + picker_bitmap.getHeight());
 
-                updatePreview();
-                return false;
+                        color = picker_bitmap.getPixel(x,y);
+                        updatePreview();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        Log.e("drag", "x: " + event.getX() + "/" + picker_bitmap.getWidth());
+                        Log.e("drag", "y: " + event.getY() + "/" + picker_bitmap.getHeight());
+
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        break;
+                }
+                return true;
             }
         });
 
@@ -74,7 +100,9 @@ public class CreateFragment extends Fragment {
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Notification note = new Notification(color, title.getText().toString(), text.getText().toString());
+                Notification note = new Notification(notificationId++, color, title.getText().toString(), text.getText().toString());
+                editor.putInt(NOTIFICATION_ID, notificationId);
+                editor.apply();
                 createNotification(note);
             }
         });
@@ -85,9 +113,15 @@ public class CreateFragment extends Fragment {
     }
 
     //TODO: Sound mixer in notification bar
-    //TODO: joseph features?
 
     //TODO: Pairity: saving
+    //TODO: unique id
+    //todo: games in notif?
+
+    //TODO: Color - last HSV slider
+    //TODO app icon
+    //color pciker ui
+    //backlog of notififcations
 
     public void createNotification(Notification notification){
         /*
@@ -97,16 +131,9 @@ public class CreateFragment extends Fragment {
                         //.setSmallIcon(android.R.drawable.ic_menu_selectall_holo_light)
                         .setSmallIcon(R.drawable.ic_star_border_white_24dp)
                         .setColor(((ColorDrawable) color.getBackground()).getColor())
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        // mId allows you to update the notification later on.
-        mNotificationManager.notify(id++, mBuilder.build());
-        editor.putInt("id", id);
-        editor.apply();
         */
 
-        //color pciker ui
-        //backlog of notififcations
+
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), getString(R.string.channel_id))
                 .setSmallIcon(R.drawable.ic_star_border_black_24dp)
@@ -117,10 +144,7 @@ public class CreateFragment extends Fragment {
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
 
-        //TODO: unique id
         // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(100, builder.build());
-
-        //craashes???
+        notificationManager.notify(notification.getId(), builder.build());
     }
 }
