@@ -22,7 +22,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ViewPager2 viewPager;
+    protected ViewPager2 viewPager;
     private FragmentStateAdapter pagerAdapter;
 
     //Put in app startup (where is that code???
@@ -94,8 +94,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
-     * sequence.
+     * A simple pager adapter that represents ScreenSlidePageFragment objects, in sequence.
      */
     private class ScreenSlidePagerAdapter extends FragmentStateAdapter {
         public ScreenSlidePagerAdapter(FragmentActivity fa) {

@@ -35,26 +35,12 @@ public class NotificationDataSingleton {
         return db;
     }
 
-    //TODO: make this async - as it is the UI thread will hang on this so...
     public List<Notification> getHistory(Context context){
         return getDatabase(context).notificationDAO().getAll();
     }
 
     public void writeNotification(Context context, Notification... notifications){
-        ExecutorService exec = Executors.newSingleThreadExecutor();
-        class WriteRunnable implements Runnable {
-            Context context;
-            Notification[] notifications;
-            public WriteRunnable(Context p_context, Notification... p_notifications){
-                context = p_context;
-                notifications = p_notifications;
-            }
-            @Override
-            public void run() {
-                getDatabase(context).notificationDAO().insertAll(notifications);
-            }
-        }
-        exec.submit(new WriteRunnable(context, notifications));
+        getDatabase(context).notificationDAO().insertAll(notifications);
     }
 
     public void deleteNotififcation(Context context, Notification notification){
@@ -77,8 +63,9 @@ public class NotificationDataSingleton {
     //TODO: Sound mixer in notification bar
     //todo: games in notif?
 
-    //TODO: Color - last HSV slider
     //TODO app icon
+    //TODO: make this async - as it is the UI thread will hang on this so...
+    // Use a local storage layer? all app ops happen on local level, with threaded changes on back
 
     public static void createNotification(Context context, String channel, Notification notification){
         /*

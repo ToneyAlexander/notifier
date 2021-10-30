@@ -3,10 +3,8 @@ package com.toneyalexander.notifier;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -75,26 +73,33 @@ public class CreateFragment extends Fragment {
         colorPicker.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                activity.viewPager.setUserInputEnabled(false);
 
                 switch(event.getAction()){
                     case MotionEvent.ACTION_DOWN:
+                    case MotionEvent.ACTION_MOVE:
                         int x = (int)((event.getX()/colorPicker.getWidth()) * picker_bitmap.getWidth());
                         int y = (int)((event.getY()/colorPicker.getHeight()) * picker_bitmap.getHeight());
-                        Log.e("press", "x: " + x + "/" + picker_bitmap.getWidth());
-                        Log.e("press", "y: " + y + "/" + picker_bitmap.getHeight());
+
+                        x = constrainNatural(x, picker_bitmap.getWidth());
+                        y = constrainNatural(y, picker_bitmap.getHeight());
 
                         color = picker_bitmap.getPixel(x,y);
                         updatePreview();
                         break;
-                    case MotionEvent.ACTION_MOVE:
-                        Log.e("drag", "x: " + event.getX() + "/" + picker_bitmap.getWidth());
-                        Log.e("drag", "y: " + event.getY() + "/" + picker_bitmap.getHeight());
-
-                        break;
-                    case MotionEvent.ACTION_UP:
+                    default:
+                        activity.viewPager.setUserInputEnabled(true);
                         break;
                 }
                 return true;
+            }
+            private int constrainNatural(int value, int constraint){
+                if(value >= constraint){
+                    return constraint-1;
+                } else if(value < 0){
+                    return 0;
+                }
+                return value;
             }
         });
 
